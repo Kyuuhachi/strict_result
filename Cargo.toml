@@ -1,8 +1,8 @@
 [package]
 name = "strict_result"
-version = "1.0.0"
+version = "1.0.1"
 edition = "2021"
-description = "Derive macros for `syn::Parse` and `quote::ToTokens`"
+description = "Adds a `Result::strict()?` function to help with type inference"
 authors = ["Kyuuhachi <caagr98@gmail.com>"]
 repository = "https://github.com/Kyuuhachi/strict_result"
 license = "MIT OR Apache-2.0"
