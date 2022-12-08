@@ -6,4 +6,4 @@ description = "Derive macros for `syn::Parse` and `quote::ToTokens`"
 authors = ["Kyuuhachi <caagr98@gmail.com>"]
 repository = "https://github.com/Kyuuhachi/strict_result"
 license = "MIT OR Apache-2.0"
-categories = ["error-handling", "no_std"]
+categories = ["no-std"]
