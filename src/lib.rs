@@ -39,7 +39,7 @@ In this case we can use `.strict()?` to require that the error type is equal to 
 # fn passthrough<T>(f: impl FnOnce() -> T) -> T {
 #     f()
 # }
-use strict_result::*;
+use strict_result::Strict;
 
 # fn strict() -> std::io::Result<()> {
 passthrough(|| {
@@ -70,11 +70,11 @@ mod inner {
 	///
 	/// The `StrictResult` type is intentionally not exposed, to discourage use other than a direct
 	/// `.strict()?`.
-	pub trait ResultAsStrict<A, B>: Sealed {
+	pub trait Strict<A, B>: Sealed {
 		fn strict(self) -> StrictResult<A, B>;
 	}
 
-	impl<A, B> ResultAsStrict<A, B> for Result<A, B> {
+	impl<A, B> Strict<A, B> for Result<A, B> {
 		fn strict(self) -> StrictResult<A, B> {
 			StrictResult(self)
 		}
@@ -115,4 +115,8 @@ mod inner {
 	}
 }
 
-pub use inner::ResultAsStrict;
+pub use inner::Strict;
+
+#[doc(hidden)]
+#[deprecated = "renamed to `Strict`"]
+pub use Strict as ResultAsStrict;
