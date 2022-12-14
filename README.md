@@ -29,7 +29,6 @@ In this case we can use `.strict()?` to require that the error type is equal to 
 ```rs
 use strict_result::Strict;
 
-# fn strict() -> std::io::Result<()> {
 passthrough(|| {
     std::fs::create_dir("example")?;
     Ok(())
