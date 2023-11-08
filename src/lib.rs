@@ -1,5 +1,5 @@
 #![no_std]
-#![feature(try_trait_v2, never_type)]
+#![feature(try_trait_v2)]
 
 /*!
 
@@ -81,8 +81,8 @@ impl<A, B> Strict<A, B> for Result<A, B> {
 	}
 }
 
-impl<A, B> FromResidual<StrictResult<!, B>> for StrictResult<A, B> {
-	fn from_residual(r: StrictResult<!, B>) -> Self {
+impl<A, B> FromResidual<StrictResult<Infallible, B>> for StrictResult<A, B> {
+	fn from_residual(r: StrictResult<Infallible, B>) -> Self {
 		match r {
 			StrictResult(Ok(v)) => match v {},
 			StrictResult(Err(v)) => StrictResult(Err(v))
@@ -90,8 +90,8 @@ impl<A, B> FromResidual<StrictResult<!, B>> for StrictResult<A, B> {
 	}
 }
 
-impl<A, B> FromResidual<StrictResult<!, B>> for Result<A, B> {
-	fn from_residual(r: StrictResult<!, B>) -> Self {
+impl<A, B> FromResidual<StrictResult<Infallible, B>> for Result<A, B> {
+	fn from_residual(r: StrictResult<Infallible, B>) -> Self {
 		match r {
 			StrictResult(Ok(v)) => match v {},
 			StrictResult(Err(r)) => Err(r)
@@ -110,7 +110,7 @@ impl<A, B> FromResidual<Result<Infallible, B>> for StrictResult<A, B> {
 
 impl<A, B> Try for StrictResult<A, B> {
 	type Output = A;
-	type Residual = StrictResult<!, B>;
+	type Residual = StrictResult<Infallible, B>;
 
 	fn from_output(r: A) -> Self {
 		StrictResult(Ok(r))
