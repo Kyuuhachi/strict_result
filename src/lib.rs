@@ -103,19 +103,13 @@ impl<A, B> FromResidual<StrictResult<Infallible, B>> for StrictResult<A, B> {
 
 impl<A, B> FromResidual<StrictResult<Infallible, B>> for Result<A, B> {
 	fn from_residual(r: StrictResult<Infallible, B>) -> Self {
-		match r.loose() {
-			Ok(v) => match v {},
-			Err(r) => Err(r)
-		}
+		StrictResult::from_residual(r).loose()
 	}
 }
 
 impl<A, B, B2: From<B>> FromResidual<Result<Infallible, B>> for StrictResult<A, B2> {
 	fn from_residual(r: Result<Infallible, B>) -> Self {
-		match r {
-			Ok(v) => match v {},
-			Err(r) => Err(r.into())
-		}.strict()
+		Result::from_residual(r).strict()
 	}
 }
 
