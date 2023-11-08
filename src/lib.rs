@@ -72,7 +72,15 @@ use core::ops::{ControlFlow, Try, FromResidual};
 /// exposed in it might be useful.
 #[repr(transparent)]
 #[must_use = "the contained `Result` may be an `Err` variant, which should be handled"]
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct StrictResult<A, B>(Result<A, B>);
+
+impl<A: core::fmt::Debug, B: core::fmt::Debug> core::fmt::Debug for StrictResult<A, B> {
+	fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+		self.0.fmt(f)?;
+		write!(f, ".strict()")
+	}
+}
 
 /// Provides the `.strict()?` function.
 ///
