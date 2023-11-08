@@ -1,6 +1,6 @@
 [package]
 name = "strict_result"
-version = "1.1.0"
+version = "1.2.0"
 edition = "2021"
 description = "Adds a `Result::strict()?` function to help with type inference"
 authors = ["Kyuuhachi <caagr98@gmail.com>"]
