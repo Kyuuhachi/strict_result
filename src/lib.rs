@@ -81,6 +81,12 @@ impl<A, B> Strict<A, B> for Result<A, B> {
 	}
 }
 
+impl<A, B> StrictResult<A, B> {
+	pub fn loose(self) -> Result<A, B> {
+		self.0
+	}
+}
+
 impl<A, B> FromResidual<StrictResult<Infallible, B>> for StrictResult<A, B> {
 	fn from_residual(r: StrictResult<Infallible, B>) -> Self {
 		match r {
