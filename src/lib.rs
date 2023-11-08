@@ -58,6 +58,7 @@ mod seal {
 	impl<A, B> Sealed for Result<A, B> {}
 }
 
+use core::convert::Infallible;
 use core::ops::{ControlFlow, Try, FromResidual};
 
 #[repr(transparent)]
@@ -94,6 +95,15 @@ impl<A, B> FromResidual<StrictResult<!, B>> for Result<A, B> {
 		match r {
 			StrictResult(Ok(v)) => match v {},
 			StrictResult(Err(r)) => Err(r)
+		}
+	}
+}
+
+impl<A, B> FromResidual<Result<Infallible, B>> for StrictResult<A, B> {
+	fn from_residual(r: Result<Infallible, B>) -> Self {
+		match r {
+			Ok(v) => match v {},
+			Err(r) => StrictResult(Err(r))
 		}
 	}
 }
