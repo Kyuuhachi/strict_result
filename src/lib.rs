@@ -53,66 +53,63 @@ passthrough(|| {
 This crate uses the `try_trait_v2` feature, and thus requires nightly.
 */
 
-mod inner {
-	use core::ops::{ControlFlow, Try, FromResidual};
-
-	#[repr(transparent)]
-	#[must_use = ".strict()? is intended as a single operator"]
-	pub struct StrictResult<A, B>(Result<A, B>);
-
+mod seal {
 	pub trait Sealed {}
-
 	impl<A, B> Sealed for Result<A, B> {}
+}
 
-	/// Provides the `.strict()?` function.
-	///
-	/// See the [top-level description](crate) for details.
-	///
-	/// The `StrictResult` type is intentionally not exposed, to discourage use other than a direct
-	/// `.strict()?`.
-	pub trait Strict<A, B>: Sealed {
-		fn strict(self) -> StrictResult<A, B>;
+use core::ops::{ControlFlow, Try, FromResidual};
+
+#[repr(transparent)]
+#[must_use = ".strict()? is intended as a single operator"]
+pub struct StrictResult<A, B>(Result<A, B>);
+
+/// Provides the `.strict()?` function.
+///
+/// See the [top-level description](crate) for details.
+///
+/// The `StrictResult` type is intentionally not exposed, to discourage use other than a direct
+/// `.strict()?`.
+pub trait Strict<A, B>: seal::Sealed {
+	fn strict(self) -> StrictResult<A, B>;
+}
+
+impl<A, B> Strict<A, B> for Result<A, B> {
+	fn strict(self) -> StrictResult<A, B> {
+		StrictResult(self)
 	}
+}
 
-	impl<A, B> Strict<A, B> for Result<A, B> {
-		fn strict(self) -> StrictResult<A, B> {
-			StrictResult(self)
-		}
-	}
-
-	impl<A, B> FromResidual<StrictResult<!, B>> for StrictResult<A, B> {
-		fn from_residual(r: StrictResult<!, B>) -> Self {
-			match r {
-				StrictResult(Ok(v)) => match v {},
-				StrictResult(Err(v)) => StrictResult(Err(v))
-			}
-		}
-	}
-
-	impl<A, B> FromResidual<StrictResult<!, B>> for Result<A, B> {
-		fn from_residual(r: StrictResult<!, B>) -> Self {
-			match r {
-				StrictResult(Ok(v)) => match v {},
-				StrictResult(Err(r)) => Err(r)
-			}
-		}
-	}
-
-	impl<A, B> Try for StrictResult<A, B> {
-		type Output = A;
-		type Residual = StrictResult<!, B>;
-
-		fn from_output(r: A) -> Self {
-			StrictResult(Ok(r))
-		}
-
-		fn branch(self) -> ControlFlow<Self::Residual, Self::Output> {
-			match self {
-				StrictResult(Ok(v)) => ControlFlow::Continue(v),
-				StrictResult(Err(e)) => ControlFlow::Break(StrictResult(Err(e))),
-			}
+impl<A, B> FromResidual<StrictResult<!, B>> for StrictResult<A, B> {
+	fn from_residual(r: StrictResult<!, B>) -> Self {
+		match r {
+			StrictResult(Ok(v)) => match v {},
+			StrictResult(Err(v)) => StrictResult(Err(v))
 		}
 	}
 }
 
-pub use inner::Strict;
+impl<A, B> FromResidual<StrictResult<!, B>> for Result<A, B> {
+	fn from_residual(r: StrictResult<!, B>) -> Self {
+		match r {
+			StrictResult(Ok(v)) => match v {},
+			StrictResult(Err(r)) => Err(r)
+		}
+	}
+}
+
+impl<A, B> Try for StrictResult<A, B> {
+	type Output = A;
+	type Residual = StrictResult<!, B>;
+
+	fn from_output(r: A) -> Self {
+		StrictResult(Ok(r))
+	}
+
+	fn branch(self) -> ControlFlow<Self::Residual, Self::Output> {
+		match self {
+			StrictResult(Ok(v)) => ControlFlow::Continue(v),
+			StrictResult(Err(e)) => ControlFlow::Break(StrictResult(Err(e))),
+		}
+	}
+}
