@@ -116,7 +116,3 @@ mod inner {
 }
 
 pub use inner::Strict;
-
-#[doc(hidden)]
-#[deprecated = "renamed to `Strict`"]
-pub use Strict as ResultAsStrict;
