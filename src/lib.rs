@@ -1,3 +1,4 @@
+#![warn(missing_docs)]
 #![no_std]
 #![feature(try_trait_v2)]
 
@@ -77,6 +78,7 @@ pub struct StrictResult<A, B>(Result<A, B>);
 ///
 /// See the [top-level description](crate) for details.
 pub trait Strict<A, B>: seal::Sealed {
+	/// Converts a `Result` into a `StrictResult`.
 	fn strict(self) -> StrictResult<A, B>;
 }
 
@@ -87,6 +89,7 @@ impl<A, B> Strict<A, B> for Result<A, B> {
 }
 
 impl<A, B> StrictResult<A, B> {
+	/// Converts a `StrictResult` into a `Result`.
 	pub fn loose(self) -> Result<A, B> {
 		self.0
 	}
