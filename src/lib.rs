@@ -61,8 +61,16 @@ mod seal {
 use core::convert::Infallible;
 use core::ops::{ControlFlow, Try, FromResidual};
 
+/// A wrapper around `Result` that suppresses the implicit `.into()` when using the `?` operator.
+///
+/// It can be converted to and from `Result` with the [`strict`](Strict::strict) and
+/// [`loose`](StrictResult::loose) functions.
+///
+/// It is in general not recommended to have this function in function signatures; the recommended
+/// usage is to use `.strict()?` after function calls to suppress the casting. Still, this type is
+/// exposed in it might be useful.
 #[repr(transparent)]
-#[must_use = ".strict()? is intended as a single operator"]
+#[must_use = "the contained `Result` may be an `Err` variant, which should be handled"]
 pub struct StrictResult<A, B>(Result<A, B>);
 
 /// Provides the `.strict()?` function.
