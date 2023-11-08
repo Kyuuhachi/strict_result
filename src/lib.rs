@@ -76,9 +76,6 @@ pub struct StrictResult<A, B>(Result<A, B>);
 /// Provides the `.strict()?` function.
 ///
 /// See the [top-level description](crate) for details.
-///
-/// The `StrictResult` type is intentionally not exposed, to discourage use other than a direct
-/// `.strict()?`.
 pub trait Strict<A, B>: seal::Sealed {
 	fn strict(self) -> StrictResult<A, B>;
 }
