@@ -97,18 +97,18 @@ impl<A, B> StrictResult<A, B> {
 
 impl<A, B> FromResidual<StrictResult<Infallible, B>> for StrictResult<A, B> {
 	fn from_residual(r: StrictResult<Infallible, B>) -> Self {
-		match r {
-			StrictResult(Ok(v)) => match v {},
-			StrictResult(Err(v)) => StrictResult(Err(v))
-		}
+		match r.loose() {
+			Ok(v) => match v {},
+			Err(v) => Err(v)
+		}.strict()
 	}
 }
 
 impl<A, B> FromResidual<StrictResult<Infallible, B>> for Result<A, B> {
 	fn from_residual(r: StrictResult<Infallible, B>) -> Self {
-		match r {
-			StrictResult(Ok(v)) => match v {},
-			StrictResult(Err(r)) => Err(r)
+		match r.loose() {
+			Ok(v) => match v {},
+			Err(r) => Err(r)
 		}
 	}
 }
@@ -117,8 +117,8 @@ impl<A, B> FromResidual<Result<Infallible, B>> for StrictResult<A, B> {
 	fn from_residual(r: Result<Infallible, B>) -> Self {
 		match r {
 			Ok(v) => match v {},
-			Err(r) => StrictResult(Err(r))
-		}
+			Err(r) => Err(r)
+		}.strict()
 	}
 }
 
@@ -127,13 +127,13 @@ impl<A, B> Try for StrictResult<A, B> {
 	type Residual = StrictResult<Infallible, B>;
 
 	fn from_output(r: A) -> Self {
-		StrictResult(Ok(r))
+		Ok(r).strict()
 	}
 
 	fn branch(self) -> ControlFlow<Self::Residual, Self::Output> {
-		match self {
-			StrictResult(Ok(v)) => ControlFlow::Continue(v),
-			StrictResult(Err(e)) => ControlFlow::Break(StrictResult(Err(e))),
+		match self.loose() {
+			Ok(v) => ControlFlow::Continue(v),
+			Err(e) => ControlFlow::Break(Err(e).strict()),
 		}
 	}
 }
