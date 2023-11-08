@@ -110,11 +110,11 @@ impl<A, B> FromResidual<StrictResult<Infallible, B>> for Result<A, B> {
 	}
 }
 
-impl<A, B> FromResidual<Result<Infallible, B>> for StrictResult<A, B> {
+impl<A, B, B2: From<B>> FromResidual<Result<Infallible, B>> for StrictResult<A, B2> {
 	fn from_residual(r: Result<Infallible, B>) -> Self {
 		match r {
 			Ok(v) => match v {},
-			Err(r) => Err(r)
+			Err(r) => Err(r.into())
 		}.strict()
 	}
 }
